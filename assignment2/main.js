@@ -113,7 +113,7 @@
 // import fs from "node:fs";
 
 // const create = () => {
-// 	fs.writeFileSync("omar.txt", "Hello world");
+// 	fs.mkdirSync("omar");
 // 	console.log("Success");
 // };
 // create();
@@ -151,11 +151,8 @@
 
 // const file = path.resolve("omar.txt");
 
-// fs.readFile(file, { encoding: "utf-8" }, (err, data) => {
-// 	if (err) console.log(err);
-// 	console.log(data);
-// });
-
+// const data = fs.readFileSync(file, { encoding: "utf-8" });
+// console.log(data);
 // 15 Write asynchronously to a file.(0.5 Grade)
 //
 // import path from "node:path";
@@ -186,7 +183,7 @@
 // import os from "node:os";
 
 // const metaData = () => {
-// 	return { arch: os.arch(), name: os.type() };
+// 	return { arch: os.arch(), platform: os.platform() };
 // };
 
 // console.log(metaData());
@@ -269,3 +266,225 @@
 // };
 
 // compress(file1, file2);
+
+// =====PART 2 ==========
+//
+//
+
+// import fs from "node:fs/promises";
+// import path from "node:path";
+// import http from "node:http";
+
+// const file = path.resolve("users.json");
+
+// const port = 3001;
+
+// // url => https://localhost/user/id
+// //												0===1===2
+// const server = http.createServer((req, res) => {
+// 	// 1)Create an API that adds a new user to your users stored in a JSON file (1 Grade)
+// 	// (ensure that the email of the new user doesn’t exist before)
+// 	// o URL: POST /user
+// 	if (req.method === "POST" && req.url === "/user") {
+// 		console.log("post working");
+// 		let body = "";
+
+// 		req.on("data", (chunk) => {
+// 			body += chunk;
+// 		});
+
+// 		req.on("end", async () => {
+// 			try {
+// 				const newUser = JSON.parse(body);
+
+// 				const fileContent = await fs.readFile(file, { encoding: "utf-8" });
+// 				const users = JSON.parse(fileContent);
+
+// 				const emailExists = users.find((user) => newUser.email === user.email);
+
+// 				if (emailExists) {
+// 					res.writeHead(409);
+// 					res.end(JSON.stringify({ message: "Email already exists" }));
+// 					return;
+// 				} else {
+// 					if (users.length) {
+// 						newUser.id = users[users.length - 1].id + 1;
+// 					} else {
+// 						newUser.id = 1;
+// 					}
+// 					users.push(newUser);
+// 					await fs.writeFile(file, JSON.stringify(users));
+// 					res.writeHead(200);
+// 					res.end(JSON.stringify({ message: "successfully added user" }));
+// 				}
+// 			} catch (err) {
+// 				res.writeHead(500);
+// 				res.end(
+// 					JSON.stringify({ message: "Something went wrong with the server!" }),
+// 				);
+// 			}
+// 		});
+// 	} else if (req.method === "PATCH" && req.url.startsWith("/user/")) {
+// 		//
+// 		// // 2)Create an API that updates an existing user's name, age, or email by their ID. The user ID should be retrieved
+// 		// from the URL (1 Grade)
+// 		let body = "";
+// 		const id = req.url.split("/")[2];
+
+// 		req.on("data", (chunk) => {
+// 			body += chunk;
+// 		});
+
+// 		req.on("end", async () => {
+// 			try {
+// 				const updates = JSON.parse(body);
+// 				const fileContent = await fs.readFile(file, { encoding: "utf-8" });
+// 				const users = JSON.parse(fileContent);
+
+// 				const userIndex = users.findIndex((user) => String(user.id) === id);
+
+// 				if (userIndex === -1) {
+// 					res.writeHead(404);
+// 					res.end(JSON.stringify({ message: "Id not foun" }));
+// 					return;
+// 				} else {
+// 					users[userIndex] = { ...users[userIndex], ...updates };
+// 					await fs.writeFile(file, JSON.stringify(users));
+// 				}
+// 				res.writeHead(200);
+// 				res.end(JSON.stringify({ message: "User updated successfully" }));
+// 			} catch (err) {
+// 				res.writeHead(500);
+// 				res.end(
+// 					JSON.stringify({ message: "Something went wrong with the server!!" }),
+// 				);
+// 			}
+// 		});
+// 	} else if (req.method === "DELETE" && req.url.startsWith("/user/")) {
+// 		// 3)Create an API that deletes a User by ID. The user id should be retrieved from the URL (1 Grade)
+// 		// Note: Remember to delete the user from the file
+// 		// o URL: DELETE /user/id
+// 		const id = req.url.split("/")[2];
+
+// 		req.on("data", () => {});
+
+// 		req.on("end", async () => {
+// 			try {
+// 				const fileContent = await fs.readFile(file, { encoding: "utf-8" });
+// 				const users = JSON.parse(fileContent);
+
+// 				const userIndex = users.findIndex((user) => String(user.id) === id);
+
+// 				if (userIndex === -1) {
+// 					res.writeHead(404);
+// 					res.end(JSON.stringify({ message: "User does not exist" }));
+// 					return;
+// 				} else {
+// 					const filteredUsers = users.filter((user) => String(user.id) !== id);
+// 					await fs.writeFile(file, JSON.stringify(filteredUsers));
+// 				}
+
+// 				res.writeHead(200);
+// 				res.end(JSON.stringify({ message: "Removed user successfully" }));
+// 			} catch (err) {
+// 				res.writeHead(500);
+// 				res.end(
+// 					JSON.stringify({ message: "Something went wrong with the server" }),
+// 				);
+// 			}
+// 		});
+// 	} else if (req.method === "GET" && req.url === "/user") {
+// 		// 4)Create an API that gets all users from the JSON file. (1 Grade)
+// 		// o URL: GET /user
+// 		req.on("data", () => {});
+// 		req.on("end", async () => {
+// 			try {
+// 				const fileContent = await fs.readFile(file, { encoding: "utf-8" });
+// 				res.writeHead(200);
+// 				res.end(fileContent);
+// 			} catch (err) {
+// 				res.writeHead(500);
+// 				res.end(
+// 					JSON.stringify({ message: "Something went wrong with the server!!" }),
+// 				);
+// 			}
+// 		});
+// 	} else if (req.method === "GET" && req.url.startsWith("/user/")) {
+// 		// 5)Create an API that gets User by ID. (1 Grade)
+// 		// o URL: GET /user/:id
+
+// 		const id = req.url.split("/")[2];
+// 		req.on("data", () => {});
+// 		req.on("end", async () => {
+// 			try {
+// 				const fileContent = await fs.readFile(file, { encoding: "utf-8" });
+// 				const users = JSON.parse(fileContent);
+// 				const userIndex = users.findIndex((user) => String(user.id) === id);
+
+// 				if (userIndex === -1) {
+// 					res.writeHead(404);
+// 					res.end(JSON.stringify({ message: "user does not exist" }));
+// 					return;
+// 				} else {
+// 					const user = users[userIndex];
+// 					res.writeHead(200);
+// 					res.end(JSON.stringify({ user }));
+// 				}
+// 			} catch (err) {
+// 				res.writeHead(500);
+// 				res.end(
+// 					JSON.stringify({ message: "Something went wrong with the server!!" }),
+// 				);
+// 			}
+// 		});
+// 	} else {
+// 		console.log("fallthrough!!!");
+// 		res.writeHead(404);
+// 		res.end("not found");
+// 	}
+// });
+
+// server.listen(port, () => {
+// 	console.log(`Server running on http://localhost:${port}`);
+// });
+
+// / BONUS solved in two ways!!
+
+// 1=> O(n^2)
+
+/*
+var findKthPositive = function (arr, k) {
+	let count = 0;
+
+	for (let i = 1; i <= arr.length + k; ++i) {
+		if (!arr.find((num) => num === i)) {
+			count++;
+
+			if (count === k) {
+				return i;
+			}
+		}
+	}
+};
+*/
+
+// 2=> O(nlogn)
+//
+
+// var findKthPositive = function (arr, k) {
+// 	let left = 0,
+// 		right = arr.length - 1;
+
+// 	while (left <= right) {
+// 		const mid = Math.floor((left + right) / 2);
+// 		const numsMissing = arr[mid] - (mid + 1);
+
+// 		if (numsMissing < k) {
+// 			left = mid + 1;
+// 		} else {
+// 			right = mid - 1;
+// 		}
+// 	}
+
+// 	return left + k;
+// };
