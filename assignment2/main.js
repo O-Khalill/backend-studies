@@ -468,7 +468,7 @@ var findKthPositive = function (arr, k) {
 };
 */
 
-// 2=> O(nlogn)
+// 2=> O(logn)
 //
 
 // var findKthPositive = function (arr, k) {
