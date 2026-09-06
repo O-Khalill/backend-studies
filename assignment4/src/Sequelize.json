@@ -1,0 +1,470 @@
+{
+  "info": {
+    "name": "Sequelize",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "getAllTest",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3001/user/",
+          "protocol": "http",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "user",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "dummy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3001/asdsda",
+          "protocol": "http",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "asdsda"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "post users",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3001/user/signup",
+          "protocol": "http",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "user",
+            "signup"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"omar khalil9\",\n  \"email\": \"kalil9@example.com\",\n  \"password\": \"testest3\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "get by email",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3001/user/email/kalil2@example.com",
+          "protocol": "http",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "user",
+            "email",
+            "kalil2@example.com"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "get by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/user/id/1",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "user",
+            "id",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "put",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/user/id/3",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "user",
+            "id",
+            "3"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\":\"Apples@example.com\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "add post",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3001/post/",
+          "protocol": "http",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "post",
+            ""
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\":\"Why i love Nutella\",\n  \"content\":\"nutella is great\",\n  \"userId\":3\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "delete post",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/post/id/2",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "post",
+            "id",
+            "2"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\":3\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "get post details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/post/details",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "post",
+            "details"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "get post details with comment counts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/post/details/comment-count",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "post",
+            "details",
+            "comment-count"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "bulk comments",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/bulk",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "bulk"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comments\":[\n    {\n    \"postId\":1,\n    \"content\": \"Nutella tastes good\",\n    \"userId\":1\n    }\n    , {\n    \"postId\":2,\n    \"content\": \"Nutella tastes great\",\n    \"userId\":1\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "update comment by id",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/id/3",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "id",
+            "3"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\n  \"content\": \"I love apples\", \n  \"userId\":1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "update or find ",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/find-or-create",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "find-or-create"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\":1,\n   \"content\":\"I love apples\",\n  \"postId\":1\n \n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "search comment by word",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/search/?word=nutella",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "search",
+            "?word=nutella"
+          ],
+          "query": [
+            {
+              "key": "word",
+              "value": "nutella"
+            }
+          ],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "get comment detals by id ",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/details/1",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "details",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "get by newest ",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3001/comment/newest/3",
+          "protocol": "",
+          "host": [
+            "localhost:3001"
+          ],
+          "path": [
+            "comment",
+            "newest",
+            "3"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}
