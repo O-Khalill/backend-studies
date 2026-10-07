@@ -83,7 +83,6 @@ server.get("/products/:id", async (req, res) => {
 		const [product] = await pool.query("SELECT * FROM products WHERE id = ?", [
 			id,
 		]);
-
 		if (product.length == 0) {
 			return res.status(404).json({ message: "Product not found" });
 		}
