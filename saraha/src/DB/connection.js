@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { MONGO_URI } from "../config/index.js";
+import { MONGO_URI } from "../config/config.service.js";
 
 export function connectDB() {
   try {
