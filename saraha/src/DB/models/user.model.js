@@ -42,6 +42,16 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    changeCredentialsTime: Date,
+    refreshTokens: {
+      type: [
+        {
+          tokenHash: { type: String, required: true },
+          expiresAt: { type: Date, required: true },
+        },
+      ],
+      select: false,
+    },
     profilePicPath: String,
     coverPicPath: String,
     DeletedAt: Date,
