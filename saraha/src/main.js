@@ -3,6 +3,7 @@ import { connectDB } from "./DB/index.js";
 import { SERVER_PORT } from "./config/config.service.js";
 import { notFound } from "./middleware/notFound.middleware.js";
 import { globalError } from "./middleware/error.middleware.js";
+import { authRouter } from "./modules/auth/auth.controller.js";
 
 async function bootStrap() {
   const app = express();
@@ -11,6 +12,7 @@ async function bootStrap() {
 
   await connectDB();
 
+  app.use("/auth", authRouter);
   app.use(notFound);
   app.use(globalError);
   const server = app.listen(SERVER_PORT, () => {
