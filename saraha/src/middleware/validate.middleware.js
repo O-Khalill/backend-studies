@@ -5,11 +5,11 @@ export const validateData = (schema) => {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      const validationErrors = result.error.flatten().fieldErrors();
+      const errors = result.error.flatten().fieldErrors;
 
       throw BadRequestException({
         errmMsg: "Validation failed",
-        errors: validationErrors,
+        errors: errors,
       });
     }
 

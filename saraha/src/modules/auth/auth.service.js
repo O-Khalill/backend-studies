@@ -12,8 +12,9 @@ import {
   hashToken,
   signAccessToken,
   signRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
 } from "../../common/utils/tokens.utils.js";
-import { expires } from "mongoose/lib/utils.js";
 
 export async function signUp({
   firstName,
@@ -73,4 +74,62 @@ export async function login({ email, password }) {
   });
 
   return { accessToken, refreshToken };
+}
+export async function refreshTokens({ refreshToken }) {
+  if (!refreshToken) {
+    throw BadRequestException({ errmMsg: "Refresh token is required" });
+  }
+
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch (err) {
+    // Reverted back to the secure standard error response
+    throw BadRequestException({ errmMsg: "Invalid or expired refresh token" });
+  }
+
+  const incomingTokenHash = hashToken(refreshToken);
+
+  const user = await findOne({
+    model: UserModel,
+    filter: {
+      _id: decoded.sub,
+      "refreshTokens.tokenHash": incomingTokenHash,
+    },
+  });
+
+  if (!user) {
+    throw BadRequestException({ errmMsg: "Invalid session or token revoked" });
+  }
+
+  const newAccessToken = signAccessToken({ email: user.email }, user._id);
+  const newRefreshToken = signRefreshToken(user._id);
+  const expiresAt = new Date(decodeToken(newRefreshToken).exp * 1000);
+  const newHashedRefreshToken = hashToken(newRefreshToken);
+
+  await updateOne({
+    model: UserModel,
+    filter: { _id: user._id },
+    update: {
+      $pull: { refreshTokens: { tokenHash: incomingTokenHash } },
+    },
+  });
+
+  await updateOne({
+    model: UserModel,
+    filter: { _id: user._id },
+    update: {
+      $push: {
+        refreshTokens: {
+          tokenHash: newHashedRefreshToken,
+          expiresAt: expiresAt,
+        },
+      },
+    },
+  });
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  };
 }
