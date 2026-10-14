@@ -4,6 +4,7 @@ import { SERVER_PORT } from "./config/config.service.js";
 import { notFound } from "./middleware/notFound.middleware.js";
 import { globalError } from "./middleware/error.middleware.js";
 import { authRouter } from "./modules/auth/auth.controller.js";
+import { validateData } from "./middleware/validate.middleware.js";
 
 async function bootStrap() {
   const app = express();
