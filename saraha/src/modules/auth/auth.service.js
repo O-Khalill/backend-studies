@@ -84,7 +84,6 @@ export async function refreshTokens({ refreshToken }) {
   try {
     decoded = verifyRefreshToken(refreshToken);
   } catch (err) {
-    // Reverted back to the secure standard error response
     throw BadRequestException({ errmMsg: "Invalid or expired refresh token" });
   }
 

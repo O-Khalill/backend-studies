@@ -21,3 +21,11 @@ export function notFoundException({
   const cause = { statusCode: 404, errors };
   throw new Error(errmMsg, { cause });
 }
+
+export function UnauthorizedException({
+  errmMsg = "Unauthorized access",
+} = {}) {
+  const error = new Error(errmMsg);
+  error.statusCode = 401;
+  return error;
+}
