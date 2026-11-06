@@ -1,31 +1,33 @@
+function createError(message, statusCode, errors = null) {
+	const error = new Error(message);
+	error.statusCode = statusCode;
+	error.errors = errors;
+	return error;
+}
+
 export function BadRequestException({
-  errmMsg = "Bad Request exception",
-  errors = null,
+	errmMsg = "Bad Request exception",
+	errors = null,
 } = {}) {
-  const cause = { statusCode: 400, errors };
-  throw new Error(errmMsg, { cause });
+	return createError(errmMsg, 400, errors);
 }
 
 export function conflictException({
-  errmMsg = "Conflict",
-  errors = null,
+	errmMsg = "Conflict",
+	errors = null,
 } = {}) {
-  const cause = { statusCode: 409, errors };
-  throw new Error(errmMsg, { cause });
+	return createError(errmMsg, 409, errors);
 }
 
 export function notFoundException({
-  errmMsg = "Not found",
-  errors = null,
+	errmMsg = "Not found",
+	errors = null,
 } = {}) {
-  const cause = { statusCode: 404, errors };
-  throw new Error(errmMsg, { cause });
+	return createError(errmMsg, 404, errors);
 }
 
 export function UnauthorizedException({
-  errmMsg = "Unauthorized access",
+	errmMsg = "Unauthorized access",
 } = {}) {
-  const error = new Error(errmMsg);
-  error.statusCode = 401;
-  return error;
+	return createError(errmMsg, 401);
 }

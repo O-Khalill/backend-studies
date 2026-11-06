@@ -67,7 +67,7 @@ export async function login({ email, password }) {
 		throw BadRequestException({ errmMsg: "Invalid email or password" });
 	}
 
-	const accessToken = signAccessToken({ payload: email }, user._id);
+	const accessToken = signAccessToken({ email: user.email }, user._id);
 	const refreshToken = signRefreshToken(user._id);
 	const tokenExpirationDate = new Date(decodeToken(refreshToken).exp * 1000);
 
@@ -123,7 +123,7 @@ export async function refreshTokens({ refreshToken }) {
 	await updateOne({
 		model: UserModel,
 		filter: { _id: user._id },
-		update: {
+		updates: {
 			$pull: { refreshTokens: { tokenHash: incomingTokenHash } },
 		},
 	});
@@ -131,7 +131,7 @@ export async function refreshTokens({ refreshToken }) {
 	await updateOne({
 		model: UserModel,
 		filter: { _id: user._id },
-		update: {
+		updates: {
 			$push: {
 				refreshTokens: {
 					tokenHash: newHashedRefreshToken,

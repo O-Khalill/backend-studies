@@ -8,19 +8,19 @@ import { validateData } from "./middleware/validate.middleware.js";
 import { userRouter } from "./modules/user/user.controller.js";
 
 async function bootStrap() {
-  const app = express();
+	const app = express();
 
-  app.use(json());
+	app.use(json());
 
-  await connectDB();
+	await connectDB();
 
-  app.use("/auth", authRouter);
-  app.use("/user", userRouter);
-  app.use(notFound);
-  app.use(globalError);
-  const server = app.listen(SERVER_PORT, () => {
-    console.log("Listening on port " + SERVER_PORT);
-  });
+	app.use("/auth", authRouter);
+	app.use("/user", userRouter);
+	app.use(notFound);
+	app.use(globalError);
+	const server = app.listen(SERVER_PORT, () => {
+		console.log("Listening on port " + SERVER_PORT);
+	});
 }
 
 bootStrap();
