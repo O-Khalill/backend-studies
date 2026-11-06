@@ -6,10 +6,10 @@ import { globalError } from "./middleware/error.middleware.js";
 import { authRouter } from "./modules/auth/auth.controller.js";
 import { validateData } from "./middleware/validate.middleware.js";
 import { userRouter } from "./modules/user/user.controller.js";
-
+import cors from "cors";
 async function bootStrap() {
 	const app = express();
-
+	app.use(cors({ origin: "http://localhost:4200" }));
 	app.use(json());
 
 	await connectDB();

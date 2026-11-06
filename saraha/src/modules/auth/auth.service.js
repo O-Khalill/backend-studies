@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import { UserModel } from "../../DB/models/user.model.js";
+import { ProviderEnum } from "../../common/enums/user.enum.js";
+import { verifyGoogleToken } from "../../common/utils/google.utils.js";
 import { create, findOne, updateOne } from "../../DB/db.repo.js";
 import {
 	BadRequestException,
@@ -53,41 +55,75 @@ export async function signUp({
 
 	return { id: user._id, email: user.email };
 }
-
-export async function login({ email, password }) {
-	const user = await findOne({ model: UserModel, filter: { email } });
-
-	if (!user) {
-		throw BadRequestException({ errmMsg: "Invalid email or password" });
-	}
-
-	const correctPassword = await compare(password, user.password);
-
-	if (!correctPassword) {
-		throw BadRequestException({ errmMsg: "Invalid email or password" });
-	}
-
+async function issueTokens(user) {
 	const accessToken = signAccessToken({ email: user.email }, user._id);
 	const refreshToken = signRefreshToken(user._id);
-	const tokenExpirationDate = new Date(decodeToken(refreshToken).exp * 1000);
+	const expiresAt = new Date(decodeToken(refreshToken).exp * 1000);
 
-	const hashedRefreshToken = hashToken(refreshToken);
-
-	const updated = await updateOne({
+	await updateOne({
 		model: UserModel,
 		filter: { _id: user._id },
 		updates: {
 			$push: {
-				refreshTokens: {
-					$each: [
-						{ tokenHash: hashedRefreshToken, expiresAt: tokenExpirationDate },
-					],
-				},
+				refreshTokens: { tokenHash: hashToken(refreshToken), expiresAt },
 			},
 		},
 	});
 
 	return { accessToken, refreshToken };
+}
+
+export async function login({ email, password }) {
+	const user = await findOne({ model: UserModel, filter: { email } });
+
+	if (!user || user.provider !== ProviderEnum.SYSTEM) {
+		throw BadRequestException({ errmMsg: "Invalid email or password" });
+	}
+
+	const correctPassword = await compare(password, user.password);
+	if (!correctPassword) {
+		throw BadRequestException({ errmMsg: "Invalid email or password" });
+	}
+
+	return issueTokens(user);
+}
+const cleanName = (value, fallback) => {
+	const name = (value || "").trim().slice(0, 20);
+	return name.length >= 2 ? name : fallback;
+};
+
+export async function loginWithGoogle({ idToken }) {
+	const payload = await verifyGoogleToken(idToken);
+
+	if (!payload.email_verified) {
+		throw BadRequestException({ errmMsg: "Google email is not verified" });
+	}
+
+	const email = payload.email.toLowerCase();
+	let user = await findOne({ model: UserModel, filter: { email } });
+
+	if (user && user.provider !== ProviderEnum.GOOGLE) {
+		throw conflictException({
+			errmMsg:
+				"This email is registered with a password. Log in with email and password.",
+		});
+	}
+
+	if (!user) {
+		user = await create({
+			model: UserModel,
+			data: {
+				firstName: cleanName(payload.given_name, "User"),
+				lastName: cleanName(payload.family_name, "Google"),
+				email,
+				provider: ProviderEnum.GOOGLE,
+				confirmEmail: true,
+				profilePicPath: payload.picture,
+			},
+		});
+	}
+
+	return issueTokens(user);
 }
 export async function refreshTokens({ refreshToken }) {
 	if (!refreshToken) {

@@ -1,8 +1,17 @@
 import { Router } from "express";
-import { login, signUp, refreshTokens } from "./auth.service.js";
+import {
+	login,
+	signUp,
+	refreshTokens,
+	loginWithGoogle,
+} from "./auth.service.js";
 import { successResponse } from "../../common/responses/success.response.js";
 import { validateData } from "../../middleware/validate.middleware.js";
-import { loginSchema, signupSchema } from "./auth.validation.js";
+import {
+	loginSchema,
+	signupSchema,
+	googleLoginSchema,
+} from "./auth.validation.js";
 
 export const authRouter = new Router();
 
@@ -27,3 +36,12 @@ authRouter.post("/refresh", async (req, res) => {
 		data: tokens,
 	});
 });
+
+authRouter.post(
+	"/google",
+	validateData(googleLoginSchema),
+	async (req, res) => {
+		const tokens = await loginWithGoogle(req.body);
+		successResponse({ res, msg: "Logged in with Google", data: tokens });
+	},
+);
