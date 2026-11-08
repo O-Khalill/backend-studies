@@ -1,5 +1,5 @@
 import express, { json } from "express";
-import { connectDB } from "./DB/index.js";
+import { connectDB, connectRedis } from "./DB/index.js";
 import { SERVER_PORT } from "./config/config.service.js";
 import { notFound } from "./middleware/notFound.middleware.js";
 import { globalError } from "./middleware/error.middleware.js";
@@ -13,7 +13,7 @@ async function bootStrap() {
 	app.use(json());
 
 	await connectDB();
-
+	await connectRedis();
 	app.use("/auth", authRouter);
 	app.use("/user", userRouter);
 	app.use(notFound);

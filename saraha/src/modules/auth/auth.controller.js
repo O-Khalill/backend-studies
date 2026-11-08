@@ -11,6 +11,7 @@ import {
 	loginSchema,
 	signupSchema,
 	googleLoginSchema,
+	refreshSchema,
 } from "./auth.validation.js";
 
 export const authRouter = new Router();
@@ -26,7 +27,7 @@ authRouter.post("/login", validateData(loginSchema), async (req, res) => {
 	successResponse({ res, msg: "User logged in succesfully", data: user });
 });
 
-authRouter.post("/refresh", async (req, res) => {
+authRouter.post("/refresh", validateData(refreshSchema), async (req, res) => {
 	const { refreshToken } = req.body;
 
 	const tokens = await refreshTokens({ refreshToken });

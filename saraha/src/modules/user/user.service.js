@@ -3,6 +3,7 @@ import { findById, findOne } from "../../DB/db.repo.js";
 import { UserModel } from "../../DB/models/user.model.js";
 
 export async function getUserProfile(userId) {
+	console.log("YA ALLAH");
 	const user = await findById({ model: UserModel, id: userId });
 
 	if (!user) {
