@@ -31,3 +31,7 @@ export function UnauthorizedException({
 } = {}) {
 	return createError(errmMsg, 401);
 }
+
+export function ForbiddenException({ errmMsg = "Forbidden" } = {}) {
+	return createError(errmMsg, 403);
+}

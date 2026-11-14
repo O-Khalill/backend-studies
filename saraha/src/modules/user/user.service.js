@@ -7,7 +7,7 @@ export async function getUserProfile(userId) {
 	const user = await findById({ model: UserModel, id: userId });
 
 	if (!user) {
-		throw notFoundException({ errors });
+		throw notFoundException({ errmMsg: "User not found" });
 	}
 
 	return { id: user._id, email: user.email };

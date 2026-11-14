@@ -1,4 +1,6 @@
 import bcrypt from "bcrypt";
+import { generateOtp } from "../../common/utils/otp.js";
+import { sendEmail } from "../../common/utils/email.utils.js";
 import { UserModel } from "../../DB/models/user.model.js";
 import { ProviderEnum } from "../../common/enums/user.enum.js";
 import { verifyGoogleToken } from "../../common/utils/google.utils.js";

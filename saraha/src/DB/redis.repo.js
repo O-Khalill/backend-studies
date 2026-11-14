@@ -12,3 +12,6 @@ export const get = ({ key }) => redisClient.get(key);
 export const getDel = ({ key }) => redisClient.getDel(key);
 
 export const del = ({ key }) => redisClient.del(key);
+
+export const incr = ({ key }) => redisClient.incr(key);
+export const expire = ({ key, ttl }) => redisClient.expire(key, ttl);
