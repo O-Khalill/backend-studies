@@ -29,3 +29,11 @@ export const googleLoginSchema = z.object({
 export const refreshSchema = z.object({
 	refreshToken: z.string().min(1),
 });
+
+export const confirmEmailSchema = z.object({
+	email: z.email().toLowerCase(),
+	otp: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+});
+export const resendConfirmationSchema = z.object({
+	email: z.email().toLowerCase(),
+});

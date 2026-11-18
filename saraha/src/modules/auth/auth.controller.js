@@ -4,6 +4,8 @@ import {
 	signUp,
 	refreshTokens,
 	loginWithGoogle,
+	resendConfirmation,
+	confirmEmail,
 } from "./auth.service.js";
 import { successResponse } from "../../common/responses/success.response.js";
 import { validateData } from "../../middleware/validate.middleware.js";
@@ -12,6 +14,8 @@ import {
 	signupSchema,
 	googleLoginSchema,
 	refreshSchema,
+	confirmEmailSchema,
+	resendConfirmationSchema,
 } from "./auth.validation.js";
 
 export const authRouter = new Router();
@@ -44,5 +48,26 @@ authRouter.post(
 	async (req, res) => {
 		const tokens = await loginWithGoogle(req.body);
 		successResponse({ res, msg: "Logged in with Google", data: tokens });
+	},
+);
+
+authRouter.post(
+	"/confirm-email",
+	validateData(confirmEmailSchema),
+	async (req, res) => {
+		const data = await confirmEmail(req.body);
+		successResponse({ res, msg: "Email confirmed", data });
+	},
+);
+
+authRouter.post(
+	"/resend-confirmation",
+	validateData(resendConfirmationSchema),
+	async (req, res) => {
+		await resendConfirmation(req.body);
+		successResponse({
+			res,
+			msg: "If the account exists, a new code has been sent",
+		});
 	},
 );

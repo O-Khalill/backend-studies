@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { PHONE_SECRET, SALT_ROUNDS } from "../../config/config.service.js";
+import {
+	OTP_SECRET,
+	PHONE_SECRET,
+	SALT_ROUNDS,
+} from "../../config/config.service.js";
 
 export function hash(plainText) {
 	return bcrypt.hash(plainText, SALT_ROUNDS);
@@ -15,4 +19,8 @@ export function hashPhone(phoneNumber) {
 		.createHmac("SHA256", PHONE_SECRET)
 		.update(phoneNumber)
 		.digest("hex");
+}
+
+export function hashOTP(otp) {
+	return crypto.createHmac("SHA256", OTP_SECRET).update(otp).digest("hex");
 }

@@ -9,8 +9,14 @@ import {
 	BadRequestException,
 	conflictException,
 	notFoundException,
+	ForbiddenException,
 } from "../../common/exceptions/app.exception.js";
-import { compare, hash, hashPhone } from "../../common/security/hash.js";
+import {
+	compare,
+	hash,
+	hashPhone,
+	hashOTP,
+} from "../../common/security/hash.js";
 import {
 	REFRESH_TOKEN_TTL,
 	refreshTokenKey,
@@ -19,8 +25,67 @@ import {
 	verifyAccessToken,
 	verifyRefreshToken,
 } from "../../common/utils/tokens.utils.js";
-import { set, getDel } from "../../DB/redis.repo.js";
+import { set, getDel, del, incr, expire, get } from "../../DB/redis.repo.js";
+const OTP_TTL = 10 * 60;
+const ATTEMPTS_TTL = 60 * 60;
+const OTP_MAX_ATTEMPTS = 5;
+const RESEND_COOLDOWN = 60;
 
+const otpKey = (email) => `otp:confirm:${email}`;
+const attemptsKey = (email) => `otp:attempts:${email}`;
+const cooldownKey = (email) => `otp:cooldown:${email}`;
+async function sendConfirmationEmail(email) {
+	const otp = generateOtp();
+	await set({ key: otpKey(email), value: hashOTP(otp), ttl: OTP_TTL });
+	await set({ key: cooldownKey(email), value: "1", ttl: RESEND_COOLDOWN });
+	await sendEmail({
+		to: email,
+		subject: "Confirm your email",
+		html: `<p>Your confirmation code is <b>${otp}</b>. It expires in 10 minutes.</p>`,
+	});
+}
+
+export async function confirmEmail({ email, otp }) {
+	const user = await findOne({ model: UserModel, filter: { email } });
+	if (!user) throw BadRequestException({ errmMsg: "Invalid or expired code" });
+	if (user.confirmEmail) {
+		throw BadRequestException({ errmMsg: "Email already confirmed" });
+	}
+
+	const attempts = await incr({ key: attemptsKey(email) });
+	if (attempts === 1)
+		await expire({ key: attemptsKey(email), ttl: ATTEMPTS_TTL });
+	if (attempts > OTP_MAX_ATTEMPTS) {
+		throw BadRequestException({
+			errmMsg: "Too many attempts. Try again later.",
+		});
+	}
+
+	const stored = await get({ key: otpKey(email) });
+	if (!stored || stored !== hashOTP(otp)) {
+		throw BadRequestException({ errmMsg: "Invalid or expired code" });
+	}
+
+	await updateOne({
+		model: UserModel,
+		filter: { _id: user._id },
+		updates: { confirmEmail: true },
+	});
+	await del({ key: otpKey(email) });
+	await del({ key: attemptsKey(email) });
+	return { email };
+}
+
+export async function resendConfirmation({ email }) {
+	const user = await findOne({ model: UserModel, filter: { email } });
+	if (!user || user.confirmEmail) return;
+	if (await get({ key: cooldownKey(email) })) {
+		throw BadRequestException({
+			errmMsg: "Please wait before requesting another code",
+		});
+	}
+	await sendConfirmationEmail(email);
+}
 export async function signUp({
 	firstName,
 	lastName,
@@ -55,7 +120,14 @@ export async function signUp({
 			DOB,
 		},
 	});
-
+	try {
+		await sendConfirmationEmail(email);
+	} catch (err) {
+		console.error("Failed to send confirmation email:", err.message);
+	}
+	if (!user.confirmEmail) {
+		throw ForbiddenException({ errmMsg: "Please confirm your email first" });
+	}
 	return { id: user._id, email: user.email };
 }
 async function issueTokens(user) {
