@@ -26,10 +26,15 @@ import {
 	verifyRefreshToken,
 } from "../../common/utils/tokens.utils.js";
 import { set, getDel, del, incr, expire, get } from "../../DB/redis.repo.js";
+
 const OTP_TTL = 10 * 60;
 const ATTEMPTS_TTL = 60 * 60;
 const OTP_MAX_ATTEMPTS = 5;
 const RESEND_COOLDOWN = 60;
+
+const LOGIN_MAX_FAILURES = 5;
+const LOGIN_LOCK_TTL = 5 * 60;
+const loginFailKey = (email) => `login:fail:${email}`;
 
 const otpKey = (email) => `otp:confirm:${email}`;
 const attemptsKey = (email) => `otp:attempts:${email}`;
@@ -125,9 +130,7 @@ export async function signUp({
 	} catch (err) {
 		console.error("Failed to send confirmation email:", err.message);
 	}
-	if (!user.confirmEmail) {
-		throw ForbiddenException({ errmMsg: "Please confirm your email first" });
-	}
+
 	return { id: user._id, email: user.email };
 }
 async function issueTokens(user) {
@@ -142,24 +145,35 @@ async function issueTokens(user) {
 }
 
 export async function login({ email, password }) {
+	const failures = Number(await get({ key: loginFailKey(email) })) || 0;
+	if (failures >= LOGIN_MAX_FAILURES) {
+		throw TooManyRequestsException({
+			errmMsg: "Too many failed attempts. Try again later.",
+		});
+	}
+
 	const user = await findOne({ model: UserModel, filter: { email } });
 
-	if (!user || user.provider !== ProviderEnum.SYSTEM) {
+	const valid =
+		user &&
+		user.provider === ProviderEnum.SYSTEM &&
+		(await compare(password, user.password));
+
+	if (!valid) {
+		const count = await incr({ key: loginFailKey(email) });
+		if (count === 1) {
+			await expire({ key: loginFailKey(email), ttl: LOGIN_LOCK_TTL });
+		}
 		throw BadRequestException({ errmMsg: "Invalid email or password" });
 	}
 
-	const correctPassword = await compare(password, user.password);
-	if (!correctPassword) {
-		throw BadRequestException({ errmMsg: "Invalid email or password" });
+	if (!user.confirmEmail) {
+		throw ForbiddenException({ errmMsg: "Please confirm your email first" });
 	}
 
+	await del({ key: loginFailKey(email) });
 	return issueTokens(user);
 }
-const cleanName = (value, fallback) => {
-	const name = (value || "").trim().slice(0, 20);
-	return name.length >= 2 ? name : fallback;
-};
-
 export async function loginWithGoogle({ idToken }) {
 	const payload = await verifyGoogleToken(idToken);
 

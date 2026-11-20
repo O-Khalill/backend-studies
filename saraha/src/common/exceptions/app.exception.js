@@ -35,3 +35,8 @@ export function UnauthorizedException({
 export function ForbiddenException({ errmMsg = "Forbidden" } = {}) {
 	return createError(errmMsg, 403);
 }
+export function TooManyRequestsException({
+	errmMsg = "Too many requests",
+} = {}) {
+	return createError(errmMsg, 429);
+}

@@ -17,19 +17,25 @@ import {
 	confirmEmailSchema,
 	resendConfirmationSchema,
 } from "./auth.validation.js";
+import { rateLimit } from "../../middleware/ratelimit.middleware.js";
 
 export const authRouter = new Router();
-
+const loginLimiter = rateLimit({ name: "login", max: 5, windowSec: 5 * 60 });
 authRouter.post("/signup", validateData(signupSchema), async (req, res) => {
 	const body = req.body;
 	const user = await signUp(body);
 	successResponse({ res, msg: "User signed up", data: user });
 });
-authRouter.post("/login", validateData(loginSchema), async (req, res) => {
-	const body = req.body;
-	const user = await login(body);
-	successResponse({ res, msg: "User logged in succesfully", data: user });
-});
+authRouter.post(
+	"/login",
+	loginLimiter,
+	validateData(loginSchema),
+	async (req, res) => {
+		const body = req.body;
+		const user = await login(body);
+		successResponse({ res, msg: "User logged in succesfully", data: user });
+	},
+);
 
 authRouter.post("/refresh", validateData(refreshSchema), async (req, res) => {
 	const { refreshToken } = req.body;

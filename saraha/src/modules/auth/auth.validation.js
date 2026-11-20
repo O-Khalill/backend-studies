@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GenderEnum } from "../../common/enums/user.enum.js";
 
 export const signupSchema = z
 	.object({
@@ -11,7 +12,7 @@ export const signupSchema = z
 			.trim()
 			.regex(/^\+?\d{10,15}$/, "Invalid phone number"),
 		confirmPassword: z.string(),
-		gender: z.number().optional(),
+		gender: z.enum(GenderEnum).optional(),
 		DOB: z.coerce.date().optional(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {

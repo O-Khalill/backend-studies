@@ -6,7 +6,7 @@ import { verifyAccessToken } from "../common/utils/tokens.utils.js";
 
 export const authenticate = async (req, res, next) => {
 	const authHeader = req.headers.authorization;
-	console.log(authHeader);
+
 	if (!authHeader || !authHeader.toLowerCase().startsWith("bearer")) {
 		return next(
 			BadRequestException({ errmMsg: "Token is missing or invalid" }),
