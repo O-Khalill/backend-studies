@@ -58,6 +58,10 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		twoFactorEnabled: {
+			type: Boolean,
+			default: false,
+		},
 		changeCredentialsTime: Date,
 
 		profilePicPath: String,

@@ -26,19 +26,12 @@ import {
 	verifyRefreshToken,
 } from "../../common/utils/tokens.utils.js";
 import { set, getDel, del, incr, expire, get } from "../../DB/redis.repo.js";
-
-const OTP_TTL = 10 * 60;
-const ATTEMPTS_TTL = 60 * 60;
-const OTP_MAX_ATTEMPTS = 5;
-const RESEND_COOLDOWN = 60;
-
+import { sendOtp, verifyOtp } from "../../common/security/otp.js";
+import { EmailSubjectEnum } from "../../common/enums/email.enum.js";
 const LOGIN_MAX_FAILURES = 5;
 const LOGIN_LOCK_TTL = 5 * 60;
 const loginFailKey = (email) => `login:fail:${email}`;
 
-const otpKey = (email) => `otp:confirm:${email}`;
-const attemptsKey = (email) => `otp:attempts:${email}`;
-const cooldownKey = (email) => `otp:cooldown:${email}`;
 async function sendConfirmationEmail(email) {
 	const otp = generateOtp();
 	await set({ key: otpKey(email), value: hashOTP(otp), ttl: OTP_TTL });
@@ -57,39 +50,29 @@ export async function confirmEmail({ email, otp }) {
 		throw BadRequestException({ errmMsg: "Email already confirmed" });
 	}
 
-	const attempts = await incr({ key: attemptsKey(email) });
-	if (attempts === 1)
-		await expire({ key: attemptsKey(email), ttl: ATTEMPTS_TTL });
-	if (attempts > OTP_MAX_ATTEMPTS) {
-		throw BadRequestException({
-			errmMsg: "Too many attempts. Try again later.",
-		});
-	}
-
-	const stored = await get({ key: otpKey(email) });
-	if (!stored || stored !== hashOTP(otp)) {
-		throw BadRequestException({ errmMsg: "Invalid or expired code" });
-	}
+	await verifyOtp({ email, subject: EmailSubjectEnum.ConfirmEmail, otp });
 
 	await updateOne({
 		model: UserModel,
 		filter: { _id: user._id },
 		updates: { confirmEmail: true },
 	});
-	await del({ key: otpKey(email) });
-	await del({ key: attemptsKey(email) });
 	return { email };
 }
-
 export async function resendConfirmation({ email }) {
 	const user = await findOne({ model: UserModel, filter: { email } });
 	if (!user || user.confirmEmail) return;
-	if (await get({ key: cooldownKey(email) })) {
+
+	const sent = await sendOtp({
+		email,
+		subject: EmailSubjectEnum.ConfirmEmail,
+		subjectLine: "Confirm your email",
+	});
+	if (!sent) {
 		throw BadRequestException({
 			errmMsg: "Please wait before requesting another code",
 		});
 	}
-	await sendConfirmationEmail(email);
 }
 export async function signUp({
 	firstName,
@@ -126,7 +109,11 @@ export async function signUp({
 		},
 	});
 	try {
-		await sendConfirmationEmail(email);
+		await sendOtp({
+			email,
+			subject: EmailSubjectEnum.ConfirmEmail,
+			subjectLine: "Confirm your email",
+		});
 	} catch (err) {
 		console.error("Failed to send confirmation email:", err.message);
 	}
@@ -142,6 +129,79 @@ async function issueTokens(user) {
 		ttl: REFRESH_TOKEN_TTL,
 	});
 	return { accessToken, refreshToken };
+}
+
+export async function verifyLoginTwoStep({ email, otp }) {
+	const user = await findOne({ model: UserModel, filter: { email } });
+	if (!user || !user.twoFactorEnabled) {
+		throw BadRequestException({ errmMsg: "Invalid or expired code" });
+	}
+
+	await verifyOtp({ email, subject: EmailSubjectEnum.TwoStepLogin, otp });
+	return issueTokens(user);
+}
+
+export async function requestEnableTwoStep(userId) {
+	const user = await findById({ model: UserModel, id: userId });
+	if (!user) throw notFoundException({ errmMsg: "User not found" });
+	if (user.provider !== ProviderEnum.SYSTEM) {
+		throw BadRequestException({
+			errmMsg: "2FA is only available for password accounts",
+		});
+	}
+	if (user.twoFactorEnabled) {
+		throw BadRequestException({ errmMsg: "2FA is already enabled" });
+	}
+
+	const sent = await sendOtp({
+		email: user.email,
+		subject: EmailSubjectEnum.EnableTwoStep,
+		subjectLine: "Enable two-step verification",
+	});
+	if (!sent) {
+		throw BadRequestException({
+			errmMsg: "Please wait before requesting another code",
+		});
+	}
+}
+
+export async function confirmEnableTwoStep({ userId, otp }) {
+	const user = await findById({ model: UserModel, id: userId });
+	if (!user) throw notFoundException({ errmMsg: "User not found" });
+	if (user.twoFactorEnabled) {
+		throw BadRequestException({ errmMsg: "2FA is already enabled" });
+	}
+
+	await verifyOtp({
+		email: user.email,
+		subject: EmailSubjectEnum.EnableTwoStep,
+		otp,
+	});
+
+	await updateOne({
+		model: UserModel,
+		filter: { _id: user._id },
+		updates: { twoFactorEnabled: true },
+	});
+}
+
+export async function disableTwoStep({ userId, password }) {
+	const user = await findById({ model: UserModel, id: userId });
+	if (!user) throw notFoundException({ errmMsg: "User not found" });
+	if (!user.twoFactorEnabled) {
+		throw BadRequestException({ errmMsg: "2FA is not enabled" });
+	}
+
+	const correctPassword = await compare(password, user.password);
+	if (!correctPassword) {
+		throw BadRequestException({ errmMsg: "Invalid password" });
+	}
+
+	await updateOne({
+		model: UserModel,
+		filter: { _id: user._id },
+		updates: { twoFactorEnabled: false },
+	});
 }
 
 export async function login({ email, password }) {
@@ -170,8 +230,17 @@ export async function login({ email, password }) {
 	if (!user.confirmEmail) {
 		throw ForbiddenException({ errmMsg: "Please confirm your email first" });
 	}
-
 	await del({ key: loginFailKey(email) });
+
+	if (user.twoFactorEnabled) {
+		await sendOtp({
+			email,
+			subject: EmailSubjectEnum.TwoStepLogin,
+			subjectLine: "Your login code",
+		});
+		return { twoFactorRequired: true };
+	}
+
 	return issueTokens(user);
 }
 export async function loginWithGoogle({ idToken }) {

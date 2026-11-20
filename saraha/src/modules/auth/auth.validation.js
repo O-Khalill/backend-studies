@@ -38,3 +38,10 @@ export const confirmEmailSchema = z.object({
 export const resendConfirmationSchema = z.object({
 	email: z.email().toLowerCase(),
 });
+export const otpSchema = z.object({
+	otp: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+});
+
+export const disableTwoStepSchema = z.object({
+	password: z.string().min(1),
+});
