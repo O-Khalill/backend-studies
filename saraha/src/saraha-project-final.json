@@ -1,0 +1,649 @@
+{
+  "info": {
+    "name": "saraha-project",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "signup",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/signup",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "signup"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\" : \"Omar\",\n  \"lastName\" : \"Attia\",\n  \"email\" :\"zffsmsvlrbqupzpcut@vtmpj.com\",\n  \"phoneNumber\":\"0252359955\",\n  \"password\" : \"omarlovesnutella123\",\n  \"confirmPassword\" : \"omarlovesnutella123\",\n  \"DOB\" : \"2005-08-27\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/login",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n   \"email\" :\"fpfchirovqaixsfapq@kjkpc.net\",\n  \"password\" : \"omarlovesnutella123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "refresh",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/refresh",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "refresh"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{   \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3OTQxMDI1NjEsImV4cCI6MTc5NDE4ODk2MSwic3ViIjoiNmFlZmQ0MTJhMzJjN2U4Mjg0NmQ2Zjg5IiwianRpIjoiNTViZDRkNzktN2U1My00YzU4LWFiMGMtMmNhYjdkODE1YmZiIn0.j9iGMQvdCTGLoI_9ueogtBrIb35kBtrrE-UsOzVM-8g\"\n  \n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "user get profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUyNjU1OTAsImV4cCI6MTc5NTI2NjQ5MCwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.tKyGwHqPz1sJIJmh2Q09yd1OCQ-Qvnmpn73VVCQT1zc",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/user/profile",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "user",
+            "profile"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "confirm email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/confirm-email",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "confirm-email"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n      \"email\": \"zffsmsvlrbqupzpcut@vtmpj.com\",\n  \n\n  \"otp\":\"037272\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "resend confirm",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/resend-confirmation",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "resend-confirmation"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n 895081\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "enable 2fa",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUxODkzMTEsImV4cCI6MTc5NTE5MDIxMSwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.IJhkACbX_q_dldbxyqD9tXbXmso9GMUgjfDcFesTNnA",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/2fa/enable",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "2fa",
+            "enable"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "confirm 2fa",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUxODkzMTEsImV4cCI6MTc5NTE5MDIxMSwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.IJhkACbX_q_dldbxyqD9tXbXmso9GMUgjfDcFesTNnA",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/2fa/confirm",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "2fa",
+            "confirm"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "\n { \"otp\": \"250576\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "verify 2fa",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/login/verify-2fa",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "login",
+            "verify-2fa"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{   \"email\" :\"fpfchirovqaixsfapq@kjkpc.net\", \"otp\": \"250576\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "disable 2fa",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUxODkzMTEsImV4cCI6MTc5NTE5MDIxMSwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.IJhkACbX_q_dldbxyqD9tXbXmso9GMUgjfDcFesTNnA",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/2fa/disable",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "2fa",
+            "disable"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{   \"password\" : \"omarlovesnutella123\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "message send",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InpmZnNtc3ZscmJxdXB6cGN1dEB2dG1wai5jb20iLCJpYXQiOjE3OTUyODQxNTIsImV4cCI6MTc5NTI4NTA1Miwic3ViIjoiNmIwMTk2OTQ1YjNmODMxNzk3MDk1NThlIn0.OeXmePOIbrtbiII4BPCDEcD7hEbB5KVwVls6g1ClmrY",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/send",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "send"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "receiverId",
+              "disabled": false,
+              "type": "text",
+              "description": "",
+              "value": "6b0069e2607d1db0bd33c14d",
+              "contentType": "text"
+            },
+            {
+              "key": "content",
+              "disabled": false,
+              "type": "text",
+              "description": "",
+              "value": "cute cat",
+              "contentType": "text"
+            },
+            {
+              "key": "attachments",
+              "disabled": false,
+              "type": "file",
+              "description": "",
+              "src": "/home/kalil/Downloads/cat_multer_test.jpeg",
+              "contentType": "image/jpeg"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "inbox messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUyODQ0NTksImV4cCI6MTc5NTI4NTM1OSwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.vct-HYiP21HjaaxD7WdfWMrt2imgrImTo_4dFLfwfuQ",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/inbox",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "inbox"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "message request identity",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUyODEyODksImV4cCI6MTc5NTI4MjE4OSwic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIn0.Eku-VFUIXolP8-_AvfWTe1aewQKaGnabSw4wO2TH_18",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/request-identity",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "request-identity"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"messageId\": \"6b0196eb5b3f83179709558f\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "login copy",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/login",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\" :\"fpfchirovqaixsfapq@kjkpc.net\",\n  \"password\" : \"omarlovesnutella123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "message requests",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InpmZnNtc3ZscmJxdXB6cGN1dEB2dG1wai5jb20iLCJpYXQiOjE3OTUyODE1MzksImV4cCI6MTc5NTI4MjQzOSwic3ViIjoiNmIwMTk2OTQ1YjNmODMxNzk3MDk1NThlIn0.fp3pKigtqMvXpNNHRbuj4c4577jc59efZNcZSBUlAP0",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/requests",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "requests"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "message respong",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InpmZnNtc3ZscmJxdXB6cGN1dEB2dG1wai5jb20iLCJpYXQiOjE3OTUyODIxMTIsImV4cCI6MTc5NTI4MzAxMiwic3ViIjoiNmIwMTk2OTQ1YjNmODMxNzk3MDk1NThlIn0.NtlEgPjiNeH4hT79TK_M5sEfjFuj2x5GBdKqaetVTAs",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/respond",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "respond"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"messageId\": \"6b0196eb5b3f83179709558f\", \"decision\": \"accept\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "message id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InpmZnNtc3ZscmJxdXB6cGN1dEB2dG1wai5jb20iLCJpYXQiOjE3OTUyODIxMTIsImV4cCI6MTc5NTI4MzAxMiwic3ViIjoiNmIwMTk2OTQ1YjNmODMxNzk3MDk1NThlIn0.NtlEgPjiNeH4hT79TK_M5sEfjFuj2x5GBdKqaetVTAs",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/message/conversation/6b0196eb5b3f83179709558f",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "message",
+            "conversation",
+            "6b0196eb5b3f83179709558f"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "user logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZwZmNoaXJvdnFhaXhzZmFwcUBramtwYy5uZXQiLCJpYXQiOjE3OTUyODU4MzcsImV4cCI6MTc5NTI4NjczNywic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIiwianRpIjoiNGE0YmE3YmMtYTNjYS00MzdiLTgwNTQtYzE3ZjYxMzcyYWY2In0.cjWIj5A5dw1-3koYb2xpRYyZhQ_1N4_iVTON0NVXxsU",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "localhost:3000/auth/logout",
+          "protocol": "",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "auth",
+            "logout"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": " {   \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3OTUyODU4MzcsImV4cCI6MTc5NTM3MjIzNywic3ViIjoiNmIwMDY5ZTI2MDdkMWRiMGJkMzNjMTRkIiwianRpIjoiZDNjMzY4MTEtMjAxNy00MjAzLWFhOTQtNjhmZjdiOTgzYzUyIn0.-6f6NnzPZ3CBC1IL7HAkruZuieZeoQMkOvbRlz_UzbM\"\n  }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "variable": []
+}
