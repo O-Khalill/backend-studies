@@ -20,6 +20,7 @@ import {
 	conversationMessageSchema,
 } from "./message.validation.js";
 import { rateLimit } from "../../middleware/ratelimit.middleware.js";
+import { MAX_FILES, upload } from "../../common/utils/uploads.utils.js";
 
 export const messageRouter = new Router();
 
@@ -33,9 +34,15 @@ messageRouter.post(
 	"/send",
 	authenticate,
 	sendLimiter,
+	upload.array("attachments", MAX_FILES),
 	validateData(sendMessageSchema),
 	async (req, res) => {
-		const data = await sendMessage({ senderId: req.user.sub, ...req.body });
+		const attachments = (req.files || []).map((f) => f.filename);
+		const data = await sendMessage({
+			senderId: req.user.sub,
+			...req.body,
+			attachments,
+		});
 		successResponse({ res, status: 201, msg: "Message sent", data });
 	},
 );
@@ -80,12 +87,15 @@ messageRouter.post(
 	"/conversation/send",
 	authenticate,
 	sendLimiter,
+	upload.array("attachments", MAX_FILES),
 	validateData(conversationMessageSchema),
 	async (req, res) => {
+		const attachments = (req.files || []).map((f) => f.filename);
 		const data = await sendConversationMessage({
 			userId: req.user.sub,
 			rootId: req.body.messageId,
 			content: req.body.content,
+			attachments,
 		});
 		successResponse({ res, status: 201, msg: "Message sent", data });
 	},

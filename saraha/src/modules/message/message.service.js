@@ -13,7 +13,17 @@ import {
 	conflictException,
 	notFoundException,
 } from "../../common/exceptions/app.exception.js";
-export async function sendMessage({ senderId, receiverId, content }) {
+export async function sendMessage({
+	senderId,
+	receiverId,
+	content,
+	attachments = [],
+}) {
+	if (!content && attachments.length === 0) {
+		throw BadRequestException({
+			errmMsg: "A message needs text or at least one attachment",
+		});
+	}
 	if (String(senderId) === receiverId) {
 		throw BadRequestException({ errmMsg: "You cannot message yourself" });
 	}
@@ -29,7 +39,7 @@ export async function sendMessage({ senderId, receiverId, content }) {
 
 	const message = await create({
 		model: MessageModel,
-		data: { sender: senderId, receiver: receiverId, content },
+		data: { sender: senderId, receiver: receiverId, content, attachments },
 	});
 
 	return { id: message._id };
@@ -39,11 +49,10 @@ export async function getInbox({ userId }) {
 	return find({
 		model: MessageModel,
 		filter: { receiver: userId, parent: null },
-		select: "content identityStatus createdAt",
+		select: "content attachments identityStatus createdAt",
 		options: { sort: { createdAt: -1 }, limit: 50 },
 	});
 }
-
 export async function requestIdentity({ userId, messageId }) {
 	const message = await findOne({
 		model: MessageModel,
@@ -144,7 +153,18 @@ async function getConversationRoot({ userId, rootId }) {
 	return root;
 }
 
-export async function sendConversationMessage({ userId, rootId, content }) {
+export async function sendConversationMessage({
+	userId,
+	rootId,
+	content,
+	attachments = [],
+}) {
+	if (!content && attachments.length === 0) {
+		throw BadRequestException({
+			errmMsg: "A message needs text or at least one attachment",
+		});
+	}
+
 	const root = await getConversationRoot({ userId, rootId });
 
 	const receiver =
@@ -152,11 +172,16 @@ export async function sendConversationMessage({ userId, rootId, content }) {
 
 	const message = await create({
 		model: MessageModel,
-		data: { sender: userId, receiver, content, parent: root._id },
+		data: {
+			sender: userId,
+			receiver,
+			content,
+			attachments,
+			parent: root._id,
+		},
 	});
 	return { id: message._id };
 }
-
 export async function getConversation({ userId, rootId }) {
 	const root = await getConversationRoot({ userId, rootId });
 

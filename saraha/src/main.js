@@ -18,6 +18,8 @@ async function bootStrap() {
 	app.use("/auth", authRouter);
 	app.use("/user", userRouter);
 	app.use("/message", messageRouter);
+	app.use("/uploads", express.static("uploads"));
+
 	app.use(notFound);
 	app.use(globalError);
 	const server = app.listen(SERVER_PORT, () => {
