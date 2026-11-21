@@ -87,3 +87,106 @@ export async function getRequests({ userId }) {
 		options: { sort: { updatedAt: -1 }, limit: 50 },
 	});
 }
+
+export async function respondToRequest({ userId, messageId, decision }) {
+	// Only the original sender can decide
+	const message = await findOne({
+		model: MessageModel,
+		filter: { _id: messageId, sender: userId, parent: null },
+		select: "identityStatus",
+	});
+	if (!message) throw notFoundException({ errmMsg: "Message not found" });
+
+	if (message.identityStatus !== IdentityStatusEnum.PENDING) {
+		throw conflictException({
+			errmMsg: "There is no pending identity request for this message",
+		});
+	}
+
+	const newStatus =
+		decision === "accept"
+			? IdentityStatusEnum.ACCEPTED
+			: IdentityStatusEnum.REJECTED;
+
+	const updated = await findOneAndUpdate({
+		model: MessageModel,
+		filter: {
+			_id: messageId,
+			sender: userId,
+			parent: null,
+			identityStatus: IdentityStatusEnum.PENDING,
+		},
+		updates: { identityStatus: newStatus },
+	});
+	if (!updated) {
+		throw conflictException({
+			errmMsg: "There is no pending identity request for this message",
+		});
+	}
+
+	return { status: newStatus };
+}
+
+async function getConversationRoot({ userId, rootId }) {
+	const root = await findOne({
+		model: MessageModel,
+		filter: {
+			_id: rootId,
+			parent: null,
+			$or: [{ sender: userId }, { receiver: userId }],
+		},
+		select: "+sender",
+	});
+
+	if (!root || root.identityStatus !== IdentityStatusEnum.ACCEPTED) {
+		throw notFoundException({ errmMsg: "Conversation not found" });
+	}
+	return root;
+}
+
+export async function sendConversationMessage({ userId, rootId, content }) {
+	const root = await getConversationRoot({ userId, rootId });
+
+	const receiver =
+		String(root.sender) === String(userId) ? root.receiver : root.sender;
+
+	const message = await create({
+		model: MessageModel,
+		data: { sender: userId, receiver, content, parent: root._id },
+	});
+	return { id: message._id };
+}
+
+export async function getConversation({ userId, rootId }) {
+	const root = await getConversationRoot({ userId, rootId });
+
+	const replies = await find({
+		model: MessageModel,
+		filter: { parent: root._id },
+		select: "+sender content attachments createdAt",
+		options: { sort: { createdAt: 1 }, limit: 200 },
+	});
+
+	const users = await find({
+		model: UserModel,
+		filter: { _id: { $in: [root.sender, root.receiver] } },
+		select: "firstName lastName",
+	});
+	const nameOf = new Map(
+		users.map((u) => [
+			String(u._id),
+			{ id: u._id, firstName: u.firstName, lastName: u.lastName },
+		]),
+	);
+
+	const messages = [root, ...replies].map((m) => ({
+		id: m._id,
+		content: m.content,
+		attachments: m.attachments,
+		createdAt: m.createdAt,
+		author: nameOf.get(String(m.sender)),
+		mine: String(m.sender) === String(userId),
+	}));
+
+	return { conversationId: root._id, messages };
+}
