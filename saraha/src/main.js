@@ -6,6 +6,7 @@ import { globalError } from "./middleware/error.middleware.js";
 import { authRouter } from "./modules/auth/auth.controller.js";
 import { validateData } from "./middleware/validate.middleware.js";
 import { userRouter } from "./modules/user/user.controller.js";
+import { messageRouter } from "./modules/message/message.controller.js";
 import cors from "cors";
 async function bootStrap() {
 	const app = express();
@@ -16,6 +17,7 @@ async function bootStrap() {
 	await connectRedis();
 	app.use("/auth", authRouter);
 	app.use("/user", userRouter);
+	app.use("/message", messageRouter);
 	app.use(notFound);
 	app.use(globalError);
 	const server = app.listen(SERVER_PORT, () => {
