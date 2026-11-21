@@ -296,3 +296,23 @@ export async function refreshTokens({ refreshToken }) {
 
 	return issueTokens(user);
 }
+
+export async function logout({ user, refreshToken }) {
+	let decoded;
+	try {
+		decoded = verifyRefreshToken(refreshToken);
+	} catch {
+		throw BadRequestException({ errmMsg: "Invalid or expired refresh token" });
+	}
+
+	if (decoded.sub !== user.sub) {
+		throw BadRequestException({ errmMsg: "Invalid refresh token" });
+	}
+
+	await del({ key: refreshTokenKey(refreshToken) });
+
+	const remaining = user.exp - Math.floor(Date.now() / 1000);
+	if (user.jti && remaining > 0) {
+		await set({ key: `blacklist:${user.jti}`, value: "1", ttl: remaining });
+	}
+}

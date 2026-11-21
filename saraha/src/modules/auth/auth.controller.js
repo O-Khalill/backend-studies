@@ -10,6 +10,7 @@ import {
 	verifyLoginTwoStep,
 	confirmEnableTwoStep,
 	disableTwoStep,
+	logout,
 } from "./auth.service.js";
 import { successResponse } from "../../common/responses/success.response.js";
 import { validateData } from "../../middleware/validate.middleware.js";
@@ -133,5 +134,15 @@ authRouter.post(
 			password: req.body.password,
 		});
 		successResponse({ res, msg: "Two-step verification disabled" });
+	},
+);
+
+authRouter.post(
+	"/logout",
+	authenticate,
+	validateData(refreshSchema),
+	async (req, res) => {
+		await logout({ user: req.user, refreshToken: req.body.refreshToken });
+		successResponse({ res, msg: "Logged out successfully" });
 	},
 );

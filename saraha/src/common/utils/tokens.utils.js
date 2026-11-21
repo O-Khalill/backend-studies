@@ -10,6 +10,7 @@ export const signAccessToken = (payload = {}, subject) =>
 	jwt.sign(payload, ACCESS_SECRET, {
 		expiresIn: ACCESS_TOKEN_TTL,
 		subject: String(subject),
+		jwtid: crypto.randomUUID(),
 	});
 
 export const signRefreshToken = (subject) =>
